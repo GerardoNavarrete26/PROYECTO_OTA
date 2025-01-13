@@ -7,6 +7,7 @@ const path = require('path');
 const reservaRoutes = require('./routes/reservaRoutes'); // Rutas de reservas
 const habitacionRoutes = require('./routes/habitacionRoutes'); // Rutas de habitaciones
 const historialRoutes = require('./routes/historialRoutes'); // Rutas de historial
+const authRoutes = require('./routes/authRoutes'); // Rutas de autenticación
 
 // Crear instancia de Express
 const app = express();
@@ -31,6 +32,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/tu_base_de_datos')
 app.use('/api/reservas', reservaRoutes); // Rutas para reservas
 app.use('/api/habitacion', habitacionRoutes); // Rutas para habitaciones
 app.use('/api/historial', historialRoutes); // Rutas para historial
+app.use('/api/auth', authRoutes); // Rutas para autenticación
 
 // Puerto del servidor
 const PORT = 3000;
