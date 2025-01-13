@@ -3,12 +3,30 @@ const Reserva = require('../models/Reserva');
 // Crear una nueva reserva
 const createReserva = async (req, res) => {
   try {
-    console.log('Datos recibidos para crear reserva:', req.body); // Log de depuración
-    const nuevaReserva = new Reserva(req.body); // Crear una nueva instancia del modelo
-    const reserva = await nuevaReserva.save(); // Guardar en la base de datos
-    res.status(201).json(reserva); // Respuesta exitosa
+    // ✅ Verifica que no se esté enviando el campo createdAt desde el frontend
+    const { clienteId, cliente, habitacion, fechaEntrada, fechaSalida, canalOrigen, estado } = req.body;
+
+    // ✅ Crear una nueva instancia del modelo Reserva
+    const nuevaReserva = new Reserva({
+      clienteId,
+      cliente,
+      habitacion,
+      fechaEntrada,
+      fechaSalida,
+      canalOrigen,
+      estado,
+    });
+
+    // ✅ Guardar la reserva en la base de datos
+    const reservaGuardada = await nuevaReserva.save();
+
+    // ✅ Log para verificar la fecha de creación
+    console.log('Reserva guardada:', reservaGuardada);
+
+    // ✅ Devolver la reserva completa, incluyendo createdAt
+    res.status(201).json(reservaGuardada);
   } catch (error) {
-    console.error('Error al crear la reserva:', error); // Log de error
+    console.error('Error al crear la reserva:', error);
     res.status(500).json({ message: 'Error al crear la reserva', error });
   }
 };
@@ -16,14 +34,14 @@ const createReserva = async (req, res) => {
 // Obtener todas las reservas
 const getReservas = async (req, res) => {
   try {
-    const reservas = await Reserva.find(); // Obtener todas las reservas
-    res.status(200).json(reservas); // Respuesta exitosa
+    const reservas = await Reserva.find().populate('habitacion');
+    console.log(reservas)
+    res.status(200).json(reservas);
   } catch (error) {
     console.error('Error al obtener las reservas:', error);
     res.status(500).json({ message: 'Error al obtener las reservas', error });
   }
 };
-
 // Obtener una reserva por ID
 const getReservaById = async (req, res) => {
   try {
@@ -39,16 +57,16 @@ const getReservaById = async (req, res) => {
   }
 };
 
-// Obtener reservas por clienteId (PASO 1)
+// Obtener reservas por clienteId
 const obtenerReservasPorCliente = async (req, res) => {
   try {
     const { clienteId } = req.params; // Capturar el clienteId desde los parámetros de la URL
-    console.log('Cliente ID recibido:', clienteId); // Log de depuración
-    const reservas = await Reserva.find({ clienteId }); // Buscar todas las reservas que coincidan con clienteId
+    console.log('Cliente ID recibido:', clienteId);
+    const reservas = await Reserva.find({ clienteId });
     if (reservas.length === 0) {
       return res.status(404).json({ message: 'No se encontraron reservas para este cliente' });
     }
-    res.status(200).json(reservas); // Devolver todas las reservas encontradas
+    res.status(200).json(reservas);
   } catch (error) {
     console.error('Error al obtener las reservas del cliente:', error);
     res.status(500).json({ message: 'Error al obtener las reservas del cliente', error });
@@ -89,7 +107,7 @@ module.exports = {
   createReserva,
   getReservas,
   getReservaById,
-  obtenerReservasPorCliente, // Exportar el nuevo método
+  obtenerReservasPorCliente,
   updateReserva,
   deleteReserva,
 };

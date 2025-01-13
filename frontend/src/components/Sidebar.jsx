@@ -1,9 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaHome, FaClipboardList, FaBed } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaHome, FaClipboardList, FaBed, FaSignOutAlt } from 'react-icons/fa';
 import './Sidebar.css';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Elimina el token del localStorage
+    navigate('/login'); // Redirige al login
+  };
+
   return (
     <div className="sidebar">
       <h2>Dashboard</h2>
@@ -36,9 +44,15 @@ const Sidebar = () => {
             <FaClipboardList /> Historial
           </Link>
         </li>
+        <li>
+          <button className="logout-button" onClick={handleLogout}>
+            <FaSignOutAlt /> Cerrar Sesión
+          </button>
+        </li>
       </ul>
     </div>
   );
 };
 
 export default Sidebar;
+
